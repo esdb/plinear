@@ -9,7 +9,7 @@ import (
 func TestCompareEqualByAvx(t *testing.T) {
 	should := require.New(t)
 	v1 := [64]uint32{
-		0, 0, 0, 0, 0, 0, 0, 0,
+		3, 0, 0, 3, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0,
@@ -19,9 +19,11 @@ func TestCompareEqualByAvx(t *testing.T) {
 		0, 0, 0, 0, 0, 0, 3, 3}
 	ret := CompareEqualByAvx(3, &v1)
 	result := biter.Bits(ret)
-	iter := result.ScanForward()
+	iter := result.ScanBackward()
 	should.Equal(biter.Slot(0), iter())
-	should.Equal(biter.Slot(1), iter())
+	should.Equal(biter.Slot(3), iter())
+	should.Equal(biter.Slot(62), iter())
+	should.Equal(biter.Slot(63), iter())
 }
 
 func BenchmarkCompareEqualByAvx(b *testing.B) {

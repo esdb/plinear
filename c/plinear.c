@@ -1,6 +1,7 @@
 #include <immintrin.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <inttypes.h>
 
 static uint64_t combine16(uint16_t m1, uint16_t m2, uint16_t m3, uint16_t m4) {
      return (((uint64_t) m4) << 48) | (((uint64_t) m3) << 32) | (((uint64_t) m2) << 16) | ((uint64_t) m1);
@@ -70,23 +71,19 @@ uint64_t CompareEqualByAvx(uint32_t key, const uint32_t *elements)  {
     return combine16(mask1, mask2, mask3, mask4);
 }
 
-uint64_t CompareEqualByAvx2(uint32_t key, const uint32_t *elements)  {
-    const __m256i keys = _mm256_set1_epi32(key);
-    __m256i vec1 = _mm256_loadu_si256((const __m256i*)elements);
-    __m256i vec2 = _mm256_loadu_si256((const __m256i*)(elements + 8));
-    __m256i vec3 = _mm256_loadu_si256((const __m256i*)(elements + 16));
-    __m256i vec4 = _mm256_loadu_si256((const __m256i*)(elements + 32));
-
-    const __m256i cmp1 = _mm256_cmpeq_epi32(vec1, keys);
-    const __m256i cmp2 = _mm256_cmpeq_epi32(vec2, keys);
-    const __m256i cmp3 = _mm256_cmpeq_epi32(vec3, keys);
-    const __m256i cmp4 = _mm256_cmpeq_epi32(vec4, keys);
-
-    const __m256i pack1234 = _mm256_packs_epi16(_mm256_packs_epi32(cmp1, cmp2), _mm256_packs_epi32(cmp3, cmp4));
-    const uint32_t mask = _mm256_movemask_epi8(pack1234);
-    return mask;
-}
-
 int main() {
+    uint32_t key = 3;
+    uint32_t array[64] = {
+        0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,3,
+    };
+    uint64_t mask = CompareEqualByAvx(key, array);
+    printf("%" PRIu64 "\n", mask);
     return 0;
 }
