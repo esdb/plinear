@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test(t *testing.T) {
+func TestCompareEqualByAvx(t *testing.T) {
 	should := require.New(t)
 	v1 := [64]uint32{
 		0, 0, 0, 0, 0, 0, 0, 0,

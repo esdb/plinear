@@ -47,23 +47,3 @@ TEXT ·_CompareEqualByAvx(SB), $0-24
     WORD $0x0948; BYTE $0xf0 // or     %rsi,%rax
     MOVQ AX, ret+16(FP)
     RET
-
-
-TEXT ·_CompareEqualByAvx2(SB), $0-24
-
-    MOVQ key+0(FP), DI
-    MOVQ elements+8(FP), SI
-
-    LONG $0xc76ef9c5 // vmovd  %edi,%xmm0
-    LONG $0x587de2c4; BYTE $0xc0 // vpbroadcastd %xmm0,%ymm0
-    LONG $0x0e76fdc5 // vpcmpeqd (%rsi),%ymm0,%ymm1
-    LONG $0x5676fdc5; BYTE $0x20 // vpcmpeqd 0x20(%rsi),%ymm0,%ymm2
-    LONG $0x5e76fdc5; BYTE $0x40 // vpcmpeqd 0x40(%rsi),%ymm0,%ymm3
-    QUAD $0x000000808676fdc5 // vpcmpeqd 0x80(%rsi),%ymm0,%ymm0
-    LONG $0xca6bf5c5 // vpackssdw %ymm2,%ymm1,%ymm1
-    LONG $0xc06be5c5 // vpackssdw %ymm0,%ymm3,%ymm0
-    LONG $0xc063f5c5 // vpacksswb %ymm0,%ymm1,%ymm0
-    LONG $0xc0d7fdc5 // vpmovmskb %ymm0,%eax
-    VZEROUPPER
-    MOVQ AX, ret+16(FP)
-    RET
